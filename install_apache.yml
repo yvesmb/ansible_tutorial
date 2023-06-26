@@ -13,4 +13,26 @@
       update_cache: yes
     when: ansible_distribution == "Debian"
 
+  - name: install apache2 and php packages for debian
+    apt:
+      name:
+        - curl 
+        - gnupg2 
+        - dirmngr 
+        - git-core 
+        - zlib1g-dev 
+        - build-essential 
+        - libssl-dev
+        - libreadline-dev
+        - libyaml-dev 
+        - libsqlite3-dev 
+        - sqlite3 
+        - libxml2-dev 
+        - libxslt1-dev 
+        - libcurl4-openssl-dev 
+        - software-properties-common 
+        - libffi-dev 
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Debian"
   
