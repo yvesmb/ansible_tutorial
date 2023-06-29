@@ -1,6 +1,6 @@
 ---
 
-- hosts: all
+- hosts: web_servers
   become: true
   pre_tasks:
 
@@ -24,6 +24,15 @@
       state: latest
       update_cache: yes
     when: ansible_distribution == "Debian"
+
+  - name: copy the default html file for site
+    tags: apache,apache2,httpd
+    copy: 
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644      
   
 - hosts: db_servers
   become: true
