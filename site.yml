@@ -10,6 +10,16 @@
       upgrade: dist
       update_cache: yes
     when: ansible_distribution == "Debian"
+
+- hosts: all
+  become: true
+  tasks: 
+  - name: create user simone
+    tags: always
+    user:
+      name: peter
+      group: root
+       
     
 - hosts: web_servers
   become: true
@@ -32,7 +42,30 @@
       dest: /var/www/html/index.html
       owner: root
       group: root
-      mode: 0644      
+      mode: 0644
+
+  - name: start apache service
+    tags: apache, apache2
+    service:
+      name: apache2
+      state: started
+    when: ansible_distribution == "Debian"
+
+  - name: change e-mail address for admin
+    tags: apache,apache2
+    lineinfile: 
+      path: /etc/apache2/apache2.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@somewhere.net
+    when: ansible_distribution == "Debian"     
+    register: apache2
+  
+  - name: restart apache2
+    tags: apache,apache2
+    service:
+      name: apache2
+      state: restarted
+    when: apache2.changed
   
 - hosts: db_servers
   become: true
@@ -55,3 +88,21 @@
     package:
       name: samba
       state: latest
+
+- hosts: workstations
+  become: true
+  tasks:
+    - name: install unzip
+      package: 
+        name: unzip
+
+    - name: install terraform
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
+  
+      
