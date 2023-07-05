@@ -1,12 +1,26 @@
 - name: install apache2 and php packages for debian
-  tags: apache,apache2,Debian
-  apt:
+  tags: apache,php
+  package:
     name:
-      - apache2
-      - libapache2-mod-php
+      - "{{ apache_package_name }}"
+      - "{{ php_package_name }}"
     state: latest
-    update_cache: yes
+
+- name: start and enable apache service
+  tags: apache
+  service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes
+
+- name: change e-mail address for admin
+  tags: apache,apache2
+  lineinfile:
+    path: /etc/apache2/apache2.conf
+    regexp: '^ServerAdmin'
+    line: ServerAdmin somebody@somewhere.com
   when: ansible_distribution == "Debian"
+  notify: restart_apache
 
 - name: copy the default html file for site
   tags: apache,apache2,httpd
@@ -16,26 +30,3 @@
     owner: root
     group: root
     mode: 0644
-
-- name: start apache service
-  tags: apache, apache2
-  service:
-    name: apache2
-    state: started
-  when: ansible_distribution == "Debian"
-
-- name: change e-mail address for admin
-  tags: apache,apache2
-  lineinfile:
-    path: /etc/apache2/apache2.conf
-    regexp: '^ServerAdmin'
-    line: ServerAdmin somebody@somewhere.net
-  when: ansible_distribution == "Debian"
-  register: apache2
-
-- name: restart apache2
-  tags: apache,apache2
-  service:
-    name: apache2
-    state: restarted
-  when: apache2.changed
