@@ -1,0 +1,37 @@
+---
+
+- hosts: web_servers
+  become: true
+  pre_tasks:
+
+  - name: install update (Debian)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Debian"
+
+- hosts: all
+  become: true
+  tasks: 
+  - name: create user peter
+    tags: always
+    user:
+      name: peter
+      group: root
+  - name: add ssh key for peter
+    tags: alwaye
+    authorized_key:
+      user: peter
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOr6KSgaAtNA5dvjlzJpRO8yXoaXF50GjjzBw1EDBR77 ansible"
+  
+  - name: add sudoers file for peter
+    tags: always
+    copy:
+      src: sudoers_peter
+      dest: /etc/sudoers.d/peter
+      owner: root
+      group: root
+      mode: 0440
+           
+    

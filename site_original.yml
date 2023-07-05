@@ -4,16 +4,21 @@
   become: true
   pre_tasks:
 
-  - name: update repos cache (Debian)
+  - name: install update (Debian)
     tags: always
     apt:
+      upgrade: dist
       update_cache: yes
-    changed_when : false
     when: ansible_distribution == "Debian"
 
 - hosts: all
   become: true
-  tasks: 
+  tasks:
+  - name: create user peter
+    tags: always
+    user:
+      name: peter
+      group: root 
   
   - name: add ssh key for peter
     tags: alwaye
