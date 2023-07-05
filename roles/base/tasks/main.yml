@@ -1,0 +1,4 @@
+- name: add ssh key for peter
+  authorized_key:
+    user: peter
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOr6KSgaAtNA5dvjlzJpRO8yXoaXF50GjjzBw1EDBR77 ansible"
